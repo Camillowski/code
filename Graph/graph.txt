@@ -1,0 +1,32 @@
+@startuml
+title Sales data;
+
+start
+note left
+	This is Diagram for Sales Data program
+	
+	"<b>Purpose of program:"
+	*Read transactions from file
+	*Make list of all transactions for each book
+end note
+:Create ifsteam object;
+:Open file;
+note right: Argument is from argv[1] in main()
+
+if(Read first lilne from file=True) then (yes)
+    while (Read next line=True) then (Yes)
+		if (ISBN of total==trans) then (Yes)
+			:Add sale and revenue\nofboth transactions;
+        else (No)
+            :Print Total;
+            :Assign \nTrans to Total;
+        endif;
+    endwhile (No)
+    :Print Total;
+        note left: Prints last\nlonely transaction;
+else (No)
+    :Cerr 'Wrong Input';
+endif;
+:Explicitly close file;
+stop
+@enduml

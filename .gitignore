@@ -1,0 +1,10 @@
+#Ignoring
+*.[oa]
+*~
+build/
+bin/
+debug/
+doc/
+TEMP/
+
+
