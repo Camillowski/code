@@ -146,8 +146,8 @@ class Sales_data{
 	std::string bookNo;
 	unsigned int units_sold;
 	double revenue;
-	double avg_price()const;
 	
+	double avg_price()const;
 	public:
 	//Constructors
 	Sales_data(std::string s, unsigned int n, double p)
@@ -173,11 +173,15 @@ class Sales_data{
 	std::string isbn() const;
 	
 	
+	
 	//Friend functions
 	friend std::istream& read(std::istream&, Sales_data&);
 	friend Sales_data add(const Sales_data&,const Sales_data&);
 	friend std::ostream& printOut(std::ostream&, const Sales_data&);
 	
+	//Operators
+	friend std::istream& operator>>(std::istream&,Sales_data&);
+	friend Sales_data operator+(const Sales_data&, const Sales_data&);
 };
 
 inline
@@ -186,16 +190,16 @@ double Sales_data::avg_price()const{
 
 }
 
+//isbn - Fetch bookNo from object
+std::string Sales_data::isbn()const {
+	return bookNo;
+}
+
 //combine- add one member to another
 Sales_data& Sales_data::combine(const Sales_data &rhs){
 	units_sold+=rhs.units_sold;
 	revenue+=rhs.revenue;
 	return *this;
-}
-
-//isbn - Fetch bookNo from object
-std::string Sales_data::isbn()const {
-	return bookNo;
 }
 
 //Add two transactions
@@ -218,9 +222,29 @@ std::istream& read(std::istream &is, Sales_data &item){
 
 //Print output
 std::ostream& printOut(std::ostream& os, const Sales_data &item){
-	os<<item.bookNo<<"\t"<<item.units_sold<<"\t"<<item.revenue<<"\t"
-		<<item.avg_price();
+	os<<item.bookNo<<"\t"
+	<<item.units_sold<<"\t"
+	<<item.revenue<<"\t"
+	<<item.avg_price();
 	return os;
 }
 
+//Operators
+
+std::istream& operator>>(std::istream& is, Sales_data &obj){
+	double price=0;
+	is>>obj.bookNo>>obj.units_sold>>price;
+	obj.revenue=obj.units_sold*price;
+	
+	return is;
+}
+
+Sales_data operator+(const Sales_data &obj1, const Sales_data &obj2){
+	Sales_data temp;
+	temp.bookNo=obj1.bookNo;
+	temp.units_sold=obj1.units_sold + obj2.units_sold;
+	temp.revenue=obj1.revenue + obj2.revenue;
+	
+	return temp;
+}
 #endif

@@ -3,7 +3,7 @@
 CC=g++
 EXEC=Program
 DIR=~/Documents/Programowanie
-CFLAGS=-c -w -std=c++17
+CFLAGS=-c -w -std=c++17 -Wfatal-errors
 INCLUDES=-I $(DIR)/include
 LIBS=-lncurses
 SOURCES=Program.o

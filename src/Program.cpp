@@ -12,47 +12,398 @@
 #include <string>
 #include <typeinfo>
 #include "Sales_data.h"
-#include "Sales_item.h"
+//#include "Sales_item.h"
 #include <stack>
 #include <algorithm>
 #include <numeric>
 #include "MyFcn.h"
 #include <functional>
 #include <iterator>
+#include <map>
+#include <set>
 //using placeholders::_1, placeholders::_2;
 using namespace std;
+
+//Ex.
+/*
+There are at least three ways to create the pairs in the program for
+the previous exercise. Write three versions of that program, creating the pairs in each way. Explain which form you think is easiest to write and understand, and why.
+*/
+
+int main(){
+
+	vector<pair<string,int>> pvec;
+		
+	//Method #1
+	// pair<string, int> input;
+	// while(cin>>input.first>>input.second)
+	// pvec.push_back(input);
+	
+	//Method #2
+	string s;
+	int i;
+	while(cin>>s>>i)
+		pvec.push_back(pair<s,i>)
+	
+	for(auto el:pvec)
+		cout<<el.first<<" "<<el.second<<"\n";
+}
+
+//Ex.10.12
+/*
+Write a program to read a sequence of strings and ints, storing each
+into a pair. Store the pairs in a vector.
+
+
+int main(){
+
+	vector<pair<string,int>> pvec;
+	pair<string, int> input;
+
+	while(cin>>input.first>>input.second)
+	pvec.push_back(input);
+
+	for(auto el:pvec)
+		cout<<el.first<<" "<<el.second<<"\n";
+	}
+*/
+
+//Ex.10.11
+/*
+Redeﬁne bookstore without using decltype.
+
+bool compareIsbn(const Sales_data &lhs, const Sales_data &rhs){
+	return lhs.isbn()<rhs.isbn();
+}
+
+int main(){
+//bool(*fcnPtr)(const Sales_item&,const Sales_item&)=compareIsbn;
+multiset<Sales_data,bool(*)(const Sales_data&,const Sales_data&)> bookstore(compareIsbn);
+}
+*/
+
+//Ex.10.10
+/*
+Could we deﬁne a map from vector<int>::iterator to int? What about from list<int>::iterator to int? In each case, if not, why not?
+
+
+int main(){
+//Yeah
+map<vector<int>::iterator, int> map1;
+map<list<int>::iterator, int> map2;
+}
+*/
+
+//Ex.10.9
+/*
+Deﬁne a map that associates words with a list of line numbers on
+which the word might occur.
+
+
+int main(){
+map<string,list<size_t>> word_list{{"Owoc",{1,5,8,9}},{"Warzywo",{3,5,7,9}}};
+}
+*/
+
+//Ex.10.8
+/*
+Write a program that stores the excluded words in a vector instead of
+in a set. What are the advantages to using a set?
+
+
+int main(){
+map<string, size_t> cnt;
+set<string> excluded{"the","The","a","A","An","an"};
+vector<string> exclvec{"the","The","a","A","An","an"};
+
+string word;
+while(cin>>word)
+	//if(excluded.find(word)==excluded.end()) //set version
+	if(find(exclvec.begin(),exclvec.end(),word)==exclvec.end())
+		++cnt[word];
+
+	cout<<"\n";
+for(auto const &el:cnt)
+	cout<<el.second<<" "<<el.first<<endl;
+
+}
+*/
+
+//Ex.11.7 !!!
+/*
+Deﬁne a map for which the key is the family’s last name and the value
+is a vector of the children’s names.
+
+Write code to add new families and to add new children to an existing family.
+
+
+//Define a map
+using Map=map<string, vector<string>>;
+
+void print(Map fams){
+	for(pair<string,vector<string>> const &el:fams){
+		cout<<el.first<<" ";
+		for(string const& vel:el.second){
+			cout<<vel<<" ";
+		}
+		cout<<endl;
+	}
+}
+*/
+//SOLUTION #2
+/*
+Map add(){
+	Map fam;
+	for (string ln;cout<<"Last name: ", cin>>ln && ln!="@q";)
+		for(string cn; cout<<"|-Children's names: ", cin>>cn && cn!="@q";)
+			fam[ln].push_back(cn);
+	return fam;
+}
+
+int main(){
+	print(add());
+	return 0;
+}
+*/
+/*
+//SOLUTION #1
+void add(Map &fam){
+	
+	string name;
+	do{
+		name.clear();
+		cout<<"Family name: ";
+		cin>>name;
+		if (!name.empty()){
+			cout<<"Children names: ";
+			string children;
+			while(cin>>children)
+				fam[name].push_back(children);
+			cin.clear();
+			cout<<endl;
+		}
+	}while(!name.empty());
+}
+
+int main(){
+	map<string, vector<string>> family;
+	
+	//family[name]={"Kamil","Wiktor","Agnieszka"};
+	
+
+	add(family);
+	cout<<endl;
+	print(family);
+	
+}
+*/
+
+
+
+
+//Ex.11.4
+/*
+Extend your program to ignore case and punctuation. For example, “example.” “example,” and “Example” should all increment the same counter.
+
+
+string trim(string s){
+	// //Remove punctuation
+	int place=0;
+	 while((place=s.find_first_of(",.-():; \n",place))!=string::npos){
+		//cout<<place<<" ";
+		s.erase(place,1);
+	}
+	//make to lowercase
+	//cout<<s<<" "<<s.length()<<endl;
+	for(int i=0;i<s.length();++i)
+		s[i]=tolower(s[i]);
+	//cout<<s<<endl;
+	return s;
+}
+
+int main(){
+	vector<string> vektor=fl2vec(flText);
+	map<string, size_t> ile_slow;
+	
+	vector<string>::iterator begin=vektor.begin();
+
+	while(begin!=vektor.end()){
+		string temp=*begin++;
+		temp=trim(temp);
+		++ile_slow[temp];
+		//++ile_slow[*begin++];
+	}
+	
+	for(const auto el:ile_slow){
+		cout<<el.second<<" "<<el.first<<endl;
+	}		
+}
+*/
+
+//Ex.11.3
+/*
+ Write your own version of the word-counting program.
+
+
+int main(){
+	vector<string> vektor=fl2vec(flLorem);
+	map<string, size_t> ile_slow;
+	auto begin=vektor.begin();
+
+	while(begin!=vektor.end()){
+		++ile_slow[*begin++];
+	}
+	
+	for(const auto el:ile_slow){
+		cout<<el.first<<"\t# "<<el.second<<(el.second>1?" slowa":" slowo")<<endl;
+	}		
+}
+*/
+
+//Ex.10.42
+/*
+Reimplement the program that eliminated duplicate words that we wrote in § 10.2.3 (p. 383) to use a list instead of a vector.
+
+Eliminate duplicates
+1. Sort - To have same elems next to.
+2. Unique - To move duplicates to end. Return iter to first dupcatw
+3. Erase - Erase duplicates from end of container. Unique uses that!
+
+
+int main(){
+	vector<string> svec=fl2vec(flLorem);
+	list<string> slst;
+	copy(svec.begin(), svec.end(),back_inserter(slst));
+	
+	slst.sort();
+	slst.unique();
+	printCont(slst);
+}
+*/
+
+//Ex.10.37
+/*
+Given a vector that has ten elements, copy the elements from posi-
+tions 3 through 7 in reverse order to a list.
+
+int main(){
+	vector<int> vektorek{1,2,3,4,5,6,7,8,9};
+	list<int> lista;
+	auto iter=vektorek.begin()+2;
+	
+	copy(iter,vektorek.begin()+7,front_inserter(lista));
+	
+	for(auto el:lista){
+		cout<<el;
+	}
+	
+}
+*/
+
+//Ex.10.36
+/*
+ Use find to ﬁnd the last element in a list of ints with value 0.
+
+
+int main(){
+	vector<int> ivec{1,2,0,3,4,5,6,0,7,8,9};
+	auto found=find(ivec.crbegin(),ivec.crend(),0);
+	
+	for(auto iter=ivec.end()-1;iter>=found.base()-1;--iter)
+		cout<<*iter;
+}
+*/
+
+//Ex.10.35
+/*
+Now print the elements in reverse order using ordinary iterators.
+
+
+int main(){
+	vector<int> ivec{1,2,3,4,5};
+	for(auto end_iter=ivec.end()-1;end_iter>=ivec.begin();--end_iter){
+		cout<<*end_iter;
+	}
+}
+*/
+
+//Ex.10.34
+/*
+Use reverse_iterators to print a vector in reverse order.
+
+
+int main(){
+	vector<int> ivec{1,2,3,4,5};
+	
+	reverse_iterator<vector<int>::const_iterator> iter=ivec.crbegin();
+	for(;iter!=ivec.crend();++iter){
+		cout<<*iter;
+	}
+}
+*/
+
+
+//Ex.10.33
+/*
+Write a program that takes the names of an input ﬁle and two output
+ﬁles.
+The input ﬁle should hold integers.
+Using an istream_iterator read the input ﬁle.
+Using ostream_iterators, write the odd numbers into the ﬁrst output ﬁle. Each value should be followed by a space. Write the even numbers into the second ﬁle. Each of these values should be placed on a separate line.
+
+
+int main(){
+	//Names of 3 files in, 2xout
+	string fileIn="/home/cam/Documents/Programowanie/data/intIn.dat";
+	string fileOdd="./odd.txt";
+	string fileEven="./even.txt";
+	
+	//use istream to read file
+	ifstream strmIn(fileIn);
+	cout<<strmIn.is_open();
+	ofstream odd(fileOdd,ios::app);
+	ofstream even(fileEven,ios::app);
+	
+	istream_iterator<int> iter(strmIn),eof;
+	ostream_iterator<int> oter(odd," ");
+	ostream_iterator<int> eter(even," ");
+	
+	for(;iter!=eof;++iter){
+		if ((*iter)%2==0){
+			eter=*iter;
+		}else{
+			oter=*iter;
+		}
+	}
+}
+*/
+
+//Ex. Experimemts with templates
+/*
+template<class T>
+T add(T a, T b){
+	return a+b;
+}
+int main(){
+	cout<<add(5,6);
+	
+	double z=add<double>(13.2,11.5);
+	cout<<z;
+}
+*/
 
 //Ex.10.32
 /*
 Rewrite the bookstore problem from § 1.6 (p. 24) using a vector to hold the transactions and various algorithms to do the processing. Use sort with your compareIsbn function from § 10.3.1 (p. 387) to arrange the transactions in order, and then use find and accumulate to do the sum.
 
 - use vector
-- use sort, find, acumulate
-- 
-
-*/
-
-int main(){
-	string file="/home/cam/Documents/Programowanie/data/book_sales.dat";
-	
-	//ostream iter
-	ostream_iterator<string> ostrIter(cout,"\n");
-	
-	//data to vec
-	ifstream fstrm(file), eof;	
-	vector<Sales_item> dataVec;
-	
-	Sales_item temp;
-	while((fstrm++)!=eof){
-		fstrm>>temp;
-		dataVec.push_back(temp);
-	}
-	//(istream_iterator<string>(fstrm), istream_iterator<string>());
-	
-	
+- use sort with compareISBN to order
+- find and acumulate to sum
 
 	// Sales_item total;
-	// if (cin>>total){
+	// if (cin>>total){ //Start cond. If data is there.
+		
+		////Main loop. Reads transaction, and adds if the same.
 		// Sales_item trans;
 		// while(cin>>trans){
 			// if(total.isbn()==trans.isbn())
@@ -62,14 +413,59 @@ int main(){
 				// total=trans;
 			// }
 		// }
-		// cout<<total<<endl;
+		// cout<<total<<endl; //Print last transaction
 	// } else{
 		// cerr<<"No data?!";
 		// return -1;
 	// }
 	// return 0;
+
+	
+bool compareISBN(Sales_data &obj1, Sales_data &obj2){
+	return obj1.isbn() < obj2.isbn();
 }
 
+int main(){
+	string file="/home/cam/Documents/Programowanie/data/data.dat";
+	//data to vec
+	ifstream fstrm(file);
+	istream_iterator<Sales_data> itr(fstrm),eof;
+	vector<Sales_data> dataVec;
+	
+	//Fill vector with sales data from file.
+	while(itr!=eof){
+		dataVec.push_back(*(itr++));
+	}
+	
+	//ALTERNATIVE FILLING
+	// while(read(fstrm,temp)){
+		// dataVec.push_back(temp);
+	// }
+	// cout<<endl;
+	
+	//Prepare data. Sort. Elements close to eachother
+	sort(dataVec.begin(), dataVec.end(), compareISBN);
+	
+	//Accumulate
+	auto begin=dataVec.begin();
+	while(begin!=dataVec.end()){
+		//Checks for onet pas the same element
+		auto end=find_if(begin,dataVec.end(),[begin](Sales_data ob){
+			return ob.isbn()!=begin->isbn();
+			});
+		//Add elements
+		Sales_data output=accumulate(begin,end,Sales_data(begin->isbn()));
+		printOut(cout,output)<<endl;
+		//Set iterators for new iteration
+		begin=end;
+	}
+	cout<<endl;
+	//Print to check
+	for (auto el:dataVec){
+		printOut(cout,el)<<endl;
+	}
+}
+*/
 
 //Ex.10.31
 /*

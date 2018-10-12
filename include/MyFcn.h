@@ -4,6 +4,7 @@
 using namespace std;
 
 string flLorem="/home/cam/Documents/Programowanie/data/loremipsum.txt";
+string flText="/home/cam/Documents/Programowanie/data/text.dat";
 
 vector<string> str2vec(string &str){
 	//fill in vector from string;
@@ -51,7 +52,7 @@ template <typename T>
 void printCont(const T &cont){
 	
 	for(auto el:cont){
-		cout<<el;
+		cout<<el<<" ";
 	}
 	cout<<endl;
 }
