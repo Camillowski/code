@@ -3,32 +3,551 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <list>
+//#include <list>
 //#include <locale>
-#include <deque>
-#include <array>
-#include <forward_list>
+//#include <deque>
+//#include <array>
+//#include <forward_list>
 //#include <cctype>
 #include <string>
-#include <typeinfo>
+//#include <typeinfo>
 #include "Sales_data.h"
 //#include "Sales_item.h"
-#include <stack>
+//#include <stack>
 #include <algorithm>
-#include <numeric>
+//#include <numeric>
 #include "MyFcn.h"
-#include <functional>
+//#include <functional>
 #include <iterator>
 #include <map>
+#include <unordered_map>
 #include <set>
+#include <memory>
 //using placeholders::_1, placeholders::_2;
 using namespace std;
 
-//Ex.
+
+
+//Ex.12.15
+/*
+Rewrite the ﬁrst exercise to use a lambda (§ 10.3.2, p. 388) in place of
+the end_connection function.
+
+
+void f(destination &d)
+{
+	connection c = connect(&d);//Create object
+	shared_ptr<connection>(&c,[](connection *con){
+		disconnect(*con);
+	}); 
+}
+
+int main(){
+
+}
+*/
+
+//Ex. 12.4
+/*
+Write your own version of a function that uses a shared_ptr to man-
+age a connection.
+
+using:
+-shared_ptr<T>(address of built in ptr, own deleter)
+-deleter-function that takes one argument and does sth.
+
+
+//Data structures of connection params
+struct destination; // represents what we are connecting to
+struct connection; // information needed to use the connection
+
+//Function prototypes
+connection connect(destination*); // open the connection
+void disconnect(connection); // close the given connection
+
+void deleter(connection *con){
+	disconnect(*con);
+}
+//funtion using connection struct
+void f(destination &d)
+{
+
+connection c = connect(&d);//Create object
+shared_ptr<connection>(&c,deleter()); //Create pointer. It will close connection on exit or on error throw.
+
+}
+*/
+
+//Ex.12.13 TESTS
+/*
+What happen if...
+
+void fcn(shared_ptr<int> sh){
+	//Deletes mem on exit
+}
+
+int main(){
+	auto sp=make_shared<int>();
+	auto p=sp.get();
+	cout<<"hi";
+	fcn(shared_ptr<int>(p));
+	//Core dump
+}
+*/
+
+//Ex.12.7
+/*
+Redo the previous exercise, this time using shared_ptr.
+
+Use:
+-shared_ptr
+-make_shared
+
+
+shared_ptr<vector<int>> vecAlloc(){
+	return make_shared<vector<int>>();
+}
+
+shared_ptr<vector<int>> vecFill(shared_ptr<vector<int>> vec){
+	
+	int read;
+	cout<<"Write numbers: ";
+	while(cin>>read)
+		vec->push_back(read);
+	cout<<"\nThanks!"<<endl;
+	return vec;
+}
+
+void print(shared_ptr<vector<int>> vec){
+	
+	for (auto el:*vec)
+		cout<<el<<" ";
+}
+
+int main(){
+
+	print(vecFill(vecAlloc()));
+
+}
+*/
+
+
+//Ex.12.6
+/*
+Write a function that returns a dynamically allocated vector of ints.
+Pass that vector to another function that reads the standard input to give values to the elements. Pass the vector to another function to print the values that were read. Remember to delete the vector at the appropriate time.
+
+
+vector<int>* vecAlloc(){
+	return new vector<int>;
+}
+
+vector<int>* vecFill(vector<int>* vec){
+	
+	int read;
+	cout<<"Write numbers: ";
+	while(cin>>read)
+		vec->push_back(read);
+	cout<<"\nThanks!"<<endl;
+	return vec;
+}
+
+void print(vector<int>* vec){
+	
+	for (auto el:*vec)
+		cout<<el<<" ";
+	delete vec;
+}
+
+int main(){
+
+	print(vecFill(vecAlloc()));
+
+}
+*/
+
+//Ex. 12.2
+/*
+Write your own version of the StrBlob class including the const ver-
+sions of front and back.
+
+What does this class?
+I want many objects to share the same vector. When one obj is destroyed, data prevails.
+
+What is needs?
+
+-Ctors V
+	+Empty(creates null ptr)
+	+Initializer list
+-Fcns
+	+push_back
+	+pop_back
+	+front
+	+back
+-Data members
+	+prt to vector of strings
+-Private Fcns
+	+Check if elem exist and front and pop can access it.
+
+
+class StrBlob{
+	public:
+	
+	StrBlob():data(make_shared<vector<string>>()){} //Null ptr
+	StrBlob(initializer_list<string> il):data(make_shared<vector<string>> (il)){}
+	
+	void push_back(const string&);
+	void pop_back();
+	string front();
+	string front()const;
+	string back();
+	string back() const;
+	void print();
+	
+	private:
+	shared_ptr<vector<string>> data;
+};
+
+void StrBlob::push_back(const string &s){
+	data->push_back(s);
+}
+
+void StrBlob::pop_back(){
+	data->pop_back();
+}
+
+string StrBlob::front(){
+	return data->front();
+}
+
+string StrBlob::front()const {
+	return data->front();
+}
+
+string StrBlob::back(){
+	return data->back();
+}
+
+string StrBlob::back()const {
+	return data->back();
+}
+
+void StrBlob::print(){
+	for(auto el:*data){
+		cout<<el<<endl;
+	}
+}
+
+int main(){
+	StrBlob b1;
+	StrBlob b2({"Kamil","Wiki"});
+	b1=b2;
+	b2.push_back("Lodowisko");
+	b1.print();//Prints all 3 elements of vector.
+}
+*/
+
+//Ex.11.38
+/*
+Rewrite the word-counting (§ 11.1, p. 421) and word-transformation
+(§ 11.3.6, p. 440) programs to use an unordered_map.
+
+
+int main(){
+	unordered_map<string,size_t> map;
+	string file="/home/cam/Documents/Programowanie/data/loremipsum.txt";
+	ifstream fstrm(file);
+	
+	string word;
+	while(fstrm>>word){
+		++map[word];
+	}
+	
+	for (auto el:map)
+		cout<<el.first<<" "<<el.second<<endl;
+	
+}
+*/
+
+//Ex.11.33
+/*
+Implement your own version of the word-transformation program.
+
+File with rules
+File with text
+
+
+//Create map of rules
+using Map=map<string,string>;
+Map make_map(const string &file){
+	ifstream fstrm(file);
+	map<string, string> map;
+	
+	if(!fstrm.is_open()){
+		cout<<"No file";
+	}else{
+	string rule, transform;
+		while(fstrm>>rule&&getline(fstrm,transform)){
+			if(transform.size()>1)//Check if text is valid
+				//map.insert(make_pair(rule,transform.substr(1)));
+				map.insert({rule,transform.substr(1)});
+			else
+				throw runtime_error("No rule for "+rule);
+		}
+	}
+	return map; 
+}
+ 
+//Transform word if it matches rules
+string trans(string word, const Map &tr_map){
+	//find word in map
+	auto it_map =tr_map.find(word);
+	//if found return trans
+	if(it_map!=tr_map.end())
+		return it_map->second;
+	//if not return word
+	else
+		return word;
+}
+
+void do_the_job(string file,Map map){
+	ifstream fstrm(file);
+	if(!fstrm.is_open()){
+		cout<<"No file";
+		return;
+	}
+	
+	//Get line from file
+	string line;
+	while(getline(fstrm,line)){
+		//Check each word
+		istringstream sstrm(line);
+		string word;
+		//Print transformed	
+		while(sstrm>>word)
+			cout<<trans(word,map)<<" ";
+		cout<<endl;
+	}
+}
+//Print on the spot
+
+int main(){
+	string rules="/home/cam/Documents/Programowanie/data/ex11-33-rules.txt";
+	string text="/home/cam/Documents/Programowanie/data/ex11-33-text.txt";
+	Map map(make_map(rules));
+
+	do_the_job(text,map);
+}
+*/
+
+//Ex.11.32
+/*
+Using the multimap from the previous exercise, write a program to
+print the list of authors and their works alphabetically.
+
+
+int main(){
+	//Def multimap
+	multimap<string,string> authors;
+	//Fill it
+	authors.insert({{"Wiki","Book3"},{"Kamil","BBook2"},{"Kamil","ABook1"}});
+
+	//Search for author?
+	multimap<string,string>::iterator iter=authors.find("Kami");
+	//if no author do nothing.
+	if(iter!=authors.end())
+		//Erase title
+		authors.erase(iter);
+	
+	multiset<pair<string,string>> ordered;
+	
+	//Create set, that will sort elements by itself. Map sorts only by key
+	for(auto el:authors){
+		ordered.insert(make_pair(el.first,el.second));
+	}
+	
+	//Print books in alphabetical order
+	for(auto el:ordered)
+		cout<<el.first<<" "<<el.second<<endl;
+}
+*/
+
+//Ex.11.31
+/*
+Write a program that deﬁnes a multimap of authors and their works.
+Use find to ﬁnd an element in the multimap and erase that element. Be sure your program works correctly if the element you look for is not in the map.
+
+
+int main(){
+	//Def multimap
+	multimap<string,string> authors;
+	//Fill it
+	authors.insert({{"Kamil","Book2"},{"Kamil","Book1"},{"Wiki","Book3"}});
+
+	//Search for author?
+	multimap<string,string>::iterator iter=authors.find("Kamil");
+	//if no author do nothing.
+	if(iter!=authors.end())
+		//Erase title
+		authors.erase(iter);
+
+	for(auto el:authors){
+		cout<<el.first<<" "<<el.second<<endl;
+	}
+}
+*/
+
+//Ex.11.23
+/*
+Rewrite the map that stored vectors of children’s names with a key
+that is the family last name for the exercises in § 11.2.1 (p. 424) to use a multimap.
+
+
+//Define a map
+using Map=multimap<string, vector<string>>;
+
+void print(Map fams){
+	for(pair<string,vector<string>> const &el:fams){
+		cout<<el.first<<" ";
+		for(string const& vel:el.second){
+			cout<<vel<<" ";
+		}
+		cout<<endl;
+	}
+}
+
+void add(Map &fam){
+	
+	string name;
+	do{
+		name.clear();
+		cout<<"Family name: ";
+		cin>>name;
+		if (!name.empty()){
+			cout<<"Children names: ";
+			string children;
+			while(cin>>children){
+				auto ret=fam.emplace(make_pair(name,vector<string>()));
+				ret->second.push_back(children);
+			}
+			cin.clear();
+			cout<<endl;
+		}
+	}while(!name.empty());
+}
+
+int main(){
+	Map family;
+	
+	add(family);
+	cout<<endl;
+	print(family);
+}
+*/
+
+//Ex.11.20
+/*
+Rewrite the word-counting program from § 11.1 (p. 421) to use
+insert instead of subscripting. Which program do you think is easier to write and read? Explain your reasoning.
+
+
+int main(){
+	vector<string> vec=fl2vec(flLorem);
+	map<string,size_t> word_count;
+	
+	auto iter= vec.begin();
+	while(iter!=vec.end()){
+		auto ret= word_count.insert({*iter,1});
+			if(!ret.second)
+				++ret.first->second;
+		++iter;
+	}
+}
+*/
+
+//Ex.11.19
+/*
+Deﬁne a variable that you initialize by calling begin() on the
+multiset named bookstore from § 11.2.2 (p. 425). Write the variable’s type without using auto or decltype.
+
+bool compareIsbn(const Sales_data &lhs, const Sales_data &rhs){
+	return lhs.isbn()<rhs.isbn();
+}
+
+int main(){
+
+multiset<Sales_data, bool(*)(const Sales_data&, const Sales_data&)>
+bookstore(compareIsbn);
+
+//Sales_data variable=*bookstore.begin(); //Empty Cant dereference 
+multiset<Sales_data, bool(*)(const Sales_data&, const Sales_data&)>::iterator var2=bookstore.begin();
+}
+*/
+
+//Ex.11.16
+/*
+Using a map iterator write an expression that assigns a value to an
+element.
+
+int main(){
+	map<string, int> m{{"Kamil",0}};
+	map<string,int>::iterator iter=m.begin();
+	iter->second=33;
+}
+*/
+
+//Ex.11.14
+/*
+Extend the map of children to their family name that you wrote for the
+exercises in § 11.2.1 (p. 424) by having the vector store a pair that holds a child’s name and birthday.
+
+
+using Map=map<string, vector<pair<string,int>>>;
+
+void print(Map fams){
+	for(pair<string,vector<pair<string,int>>> const &el:fams){
+		cout<<"Family name: "<<el.first<<"\nChildren names and age:\n";
+		for(pair<string,int> const& vel:el.second){
+			cout<<vel.first<<" "<<vel.second<<endl;
+		}
+		cout<<endl;
+	}
+}
+
+void add(Map &fam){
+	
+	string name;
+	do{
+		name.clear();
+		cout<<"Family name: ";
+		cin>>name;
+		if (!name.empty()){
+			cout<<"Children names and age: ";
+			string children;
+			int age;
+			while(cin>>children>>age)
+				fam[name].emplace_back(children,age);
+			cin.clear();
+			cout<<endl;
+		}
+	}while(!name.empty());
+}
+
+int main(){
+	Map family;
+	
+	add(family);
+	cout<<endl;
+	print(family);
+	
+}
+*/
+
+//Ex.11.13
 /*
 There are at least three ways to create the pairs in the program for
 the previous exercise. Write three versions of that program, creating the pairs in each way. Explain which form you think is easiest to write and understand, and why.
-*/
+
 
 int main(){
 
@@ -40,16 +559,30 @@ int main(){
 	// pvec.push_back(input);
 	
 	//Method #2
+	// string s;
+	// int i;
+	// while(cin>>s>>i)
+		// pvec.push_back(make_pair(s,i));
+	
+	//Method #3
+	// string s;
+	// int i;
+	// while(cin>>s>>i){
+		// pair<string,int> p(s,i);
+		// pvec.push_back(p);
+	// }
+	//Method #4
 	string s;
 	int i;
 	while(cin>>s>>i)
-		pvec.push_back(pair<s,i>)
-	
+		pvec.emplace_back(s,i);
+
 	for(auto el:pvec)
 		cout<<el.first<<" "<<el.second<<"\n";
 }
+*/
 
-//Ex.10.12
+//Ex.11.12
 /*
 Write a program to read a sequence of strings and ints, storing each
 into a pair. Store the pairs in a vector.
@@ -68,7 +601,7 @@ int main(){
 	}
 */
 
-//Ex.10.11
+//Ex.11.11
 /*
 Redeﬁne bookstore without using decltype.
 
@@ -82,7 +615,7 @@ multiset<Sales_data,bool(*)(const Sales_data&,const Sales_data&)> bookstore(comp
 }
 */
 
-//Ex.10.10
+//Ex.11.10
 /*
 Could we deﬁne a map from vector<int>::iterator to int? What about from list<int>::iterator to int? In each case, if not, why not?
 
@@ -94,7 +627,7 @@ map<list<int>::iterator, int> map2;
 }
 */
 
-//Ex.10.9
+//Ex.11.9
 /*
 Deﬁne a map that associates words with a list of line numbers on
 which the word might occur.
@@ -105,7 +638,7 @@ map<string,list<size_t>> word_list{{"Owoc",{1,5,8,9}},{"Warzywo",{3,5,7,9}}};
 }
 */
 
-//Ex.10.8
+//Ex.11.8
 /*
 Write a program that stores the excluded words in a vector instead of
 in a set. What are the advantages to using a set?
@@ -197,9 +730,6 @@ int main(){
 	
 }
 */
-
-
-
 
 //Ex.11.4
 /*
