@@ -1,13 +1,15 @@
 #!/bin/bash
-MAKEFILE=Program.mak
+
+MAKEFILE=Test.mak
 DIR=~/Documents/Programowanie
 
 make -f $DIR/make/$MAKEFILE $1
+
 # name=Program
 # echo -e '...:::# Uruchamiam '$name'.cpp #:::...'
 # echo
 
-# g++ -w -std=c++11 -o $name $name.cpp
+# g++ -w -std=c++11 -o $name $name.cpp 
 
 # # Ty wstawić, że jeśli się nie skompiluje to nie uruchamiać programu
 # # Potrzebuję: Jaki błąd wysyła kompilator

@@ -2,6 +2,265 @@
 #define SALESDATA_H
 
 
+//-----TEXTQUERY---------------------------------
+/*
+Classes that search for word in file. Then return all line numbers where this word apears.
+*/
+
+class TextQuery;
+
+//Hold data returned by query fcn in TextQuery class
+class QueryResult{
+	public:
+	using File=std::shared_ptr<std::vector<std::string>>;
+	using SetIter=std::set<int>::iterator;
+	//Ctors
+	QueryResult(){}//Default Ctor
+	File get_file();
+	SetIter begin();
+	SetIter end();
+	
+	private:
+	std::string srch_word;
+	std::shared_ptr<std::set<int>> lineNr;//Lines numbers
+	std::shared_ptr<std::vector<std::string>> fileVec; //text lines
+	
+	friend void print(std::ostream&, QueryResult);
+	//friend QueryResult TextQuery::query(string);
+	friend class TextQuery;
+};
+
+QueryResult::File QueryResult::get_file(){
+	return fileVec;
+}
+
+QueryResult::SetIter QueryResult::begin(){
+	return lineNr->begin();
+}
+	
+QueryResult::SetIter QueryResult::end(){
+	return lineNr->end();
+}
+
+void print(std::ostream &os, QueryResult res){
+	if(res.lineNr==nullptr){
+		os<<"No word "<<res.srch_word<<std::endl;
+		return;
+	}
+	os<<"Word "<<res.srch_word<<" occurs in "<<res.lineNr->size()<<" lines:"<<std::endl;
+	auto begin=res.lineNr->begin();
+	//cout<<*begin;
+	while(begin!=res.lineNr->end()){
+		os<<"(line #"<<*begin+1<<"): "<<res.fileVec->at(*begin)<<std::endl<<std::endl;
+		++begin;
+	}
+}
+
+//Create map with words and lines, search and return lines coresonding to searched word.
+class TextQuery{
+	public:
+	
+	//ctor that fills in vector and map
+	TextQuery(std::istream& is);
+	
+	//Functions
+	QueryResult query(std::string);//Takes map and vector and Return Queryresult
+
+	
+	private:
+	//string srch_word;
+	std::shared_ptr<std::vector<std::string>> fileVec; //text lines
+	std::map<std::string,std::shared_ptr<std::set<int>>> wordMap;//Takes set
+	
+	friend class QueryResult;
+};
+
+
+TextQuery::TextQuery(std::istream& is){
+	//fileVec=make_shared<vector<string>>(); //optional assignment
+	fileVec.reset(new std::vector<std::string>);
+	
+	//Fill in vector
+	std::string line;
+	while(std::getline(is,line)){
+		fileVec->push_back(line);
+	}
+	
+	//Fill in the map
+	auto begin=fileVec->begin();
+	while(begin!=fileVec->end()){
+		std::istringstream sstrm(*begin);
+		size_t line_no=begin-fileVec->begin();
+		
+		std::string word;
+		while(sstrm>>word){
+			
+			if(wordMap[word]==nullptr) //If shared_ptr empty...
+				wordMap[word].reset(new std::set<int>); //Allocate new set
+			wordMap[word]->insert(line_no);
+			}
+		++begin;
+	}
+}
+
+QueryResult TextQuery::query(std::string srch_word){
+	QueryResult res;
+	res.srch_word=srch_word;
+	
+	auto found=wordMap.find(srch_word);
+	if(found!=wordMap.end()){
+		res.lineNr=found->second;
+		res.fileVec=fileVec;
+	}
+	
+	return res;
+}
+
+
+
+//-----STRBLOB-----------------------------------
+/*
+Class that allocate vector<string> in dynamic mem.
+It can add, remove and peek elements.
+Checks if element in vector exists before removing or peeking.
+*/
+class StrBlobPtr;
+class StrBlob{
+	public:
+	
+	friend class StrBlobPtr;
+	StrBlobPtr begin()const ;
+	StrBlobPtr end()const;
+	
+	StrBlob():data(std::make_shared<std::vector<std::string>>()){} //Empty vector
+	StrBlob(std::initializer_list<std::string> il):data(std::make_shared<std::vector<std::string>> (il)){}
+	
+	StrBlob(const StrBlob &bl):
+	data(std::make_shared<std::vector<std::string>>(*bl.data)){}
+	
+	StrBlob& operator=(const StrBlob &rhs){
+		*data=*rhs.data;
+		return *this;
+	}
+	
+	void push_back(const std::string&);
+	void pop_back();
+	std::string front();
+	std::string front()const;
+	std::string back();
+	std::string back() const;
+	void print();
+	
+	private:
+	void check(std::size_t, const std::string&)const;
+	std::shared_ptr<std::vector<std::string>> data;
+};
+
+void StrBlob::check(std::size_t sz, const std::string &msg)const{
+	if(sz>=data->size())
+		throw std::out_of_range(msg);
+}
+
+void StrBlob::push_back(const std::string &s){
+	data->push_back(s);
+}
+
+void StrBlob::pop_back(){
+	check(0,"Error");
+	data->pop_back();
+}
+
+std::string StrBlob::front(){
+	check(0,"Error");
+	return data->front();
+}
+
+std::string StrBlob::front()const {
+	check(0,"Error");
+	return data->front();
+}
+
+std::string StrBlob::back(){
+	check(0,"Error");
+	return data->back();
+}
+
+std::string StrBlob::back()const {
+	check(0,"Error");
+	return data->back();
+}
+
+void StrBlob::print(){
+	check(0,"Error");
+	for(auto el:*data){
+		std::cout<<el<<std::endl;
+	}
+}
+
+//POINTER TO BLOB
+class StrBlobPtr{
+	public:
+	//ctors
+	StrBlobPtr():curr(0){}
+	StrBlobPtr(const StrBlob &a, size_t sz=0):wptr(a.data), curr(sz){}
+	
+	//fcns
+	std::string deref();
+	StrBlobPtr& incr();
+	friend bool operator!=(const StrBlobPtr&,const StrBlobPtr&);
+	
+	
+	private:
+	std::shared_ptr<std::vector<std::string>> check(size_t,const std::string&);
+	std::weak_ptr<std::vector<std::string>> wptr;
+	size_t curr;
+	
+	
+};
+
+std::shared_ptr<std::vector<std::string>>
+StrBlobPtr::check(size_t sz, const std::string &msg){
+	//Check if there is shared pointer and if element exists
+	std::shared_ptr<std::vector<std::string>> ret=wptr.lock();
+	if(!ret)
+		throw std::runtime_error("No pointer");
+	if(sz>=ret->size())
+		throw std::out_of_range(msg);
+	
+	return ret;
+}
+
+std::string StrBlobPtr::deref(){
+	auto ret=check(curr,"No element");
+	return (*ret)[curr];
+}
+
+StrBlobPtr&  StrBlobPtr::incr(){
+	check(curr,"No element");
+	++curr;
+	return *this;
+}
+
+bool operator!=(const StrBlobPtr &lhs,const StrBlobPtr &rhs){
+	return (lhs.curr!=rhs.curr); 
+}
+
+StrBlobPtr StrBlob::begin()const {
+	return StrBlobPtr(*this);
+};
+StrBlobPtr StrBlob::end()const {
+		return StrBlobPtr(*this,data->size());
+	}
+
+void printBlob(const StrBlob &blob){ //Put const here!
+	
+	for (StrBlobPtr ptr=blob.begin(), end=blob.end();ptr!=end;ptr.incr())
+	std::cout<<ptr.deref()<<std::endl;
+	
+}
+
+
+//-----SCREEN-----------------------------------
 class Screen;
 
 class Window_mgr{
