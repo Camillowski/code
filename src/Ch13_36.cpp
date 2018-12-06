@@ -1,7 +1,5 @@
 #include "Ch13_36.h"
 #include <iostream>
-#include <set>
-#include <string>
 
 using namespace std;
 
@@ -114,17 +112,25 @@ Folder::Folder(const Folder &f): messages(f.messages){
 	
 	add_to_Message(f);
 }
-	
+
+//Assignment operator
+
+Folder& Folder::operator=(const Folder &f){
+	rem_from_Message();
+	messages=f.messages;
+	add_to_Message(f);
+	return *this;
+}
 //Add message
 void Folder::addMsg(Message &m){
 	messages.insert(&m);
-	m.addFolder(*this);
+	//m.addFolder(*this);
 }
 
 //Remove message
 void Folder::remMsg(Message &m){
 	messages.erase(&m);
-	m.remFolder(*this);
+	//m.remFolder(*this);
 }
 
 

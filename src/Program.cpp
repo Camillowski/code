@@ -244,15 +244,15 @@ void swap(Message & lhs, Message &rhs){
 */
 
 int main(){
-	Message m1("Message1");
-	Message m2("Message2");
+	Message m1("Message 1");
+	Message m2("Message 2");
 	Folder f1;
 	Folder f2;
 	
 	m1.save(f1);
 	m1.save(f2);
 	m2.save(f2);
-	f1.addMsg(m2);
+	//f1.addMsg(m2);
 	//f2.debug();
 	//f1.addMsg(m1);
 	//f1.debug();
@@ -261,10 +261,8 @@ int main(){
 	//f1.debug();
 	m1.debug();
 	m2.debug();
+	cout<<"Hello";
 	return 0;
-	
-	
-	
 }
 
 

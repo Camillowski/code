@@ -57,7 +57,10 @@ class Folder{
 		//Ctors
 		Folder(){}
 		Folder(const Folder &f);
-		//~Folder(){}
+		~Folder(){}
+		
+		//Asignment operator
+		Folder& operator=(const Folder&);
 		
 		//Add message
 		void addMsg(Message&);
