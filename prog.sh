@@ -1,21 +1,24 @@
 #!/bin/bash
+exec=Chapter_9
 
-MAKEFILE=Test.mak
-DIR=~/Documents/Programowanie
+MAKEFILE=makefile.mak
 
-make -f $DIR/make/$MAKEFILE $1
+make -f $MAKEFILE all EXEC=$exec DEBUG=$1 
 
-# name=Program
-# echo -e '...:::# Uruchamiam '$name'.cpp #:::...'
-# echo
+# Making debuger work
+# When program dont compile then do not run those lines at all. To run debuger or normal it must be compiled correctly first.
+rc=$?
+if [ $rc -eq 0 ];
+then
+	if [ "$1" != "debug" ]; then  # Run in normal mode
+		echo -e '...:::# Starting Program #:::...\n'
+		./build/$exec
+	else
+		echo -e '...:::# Debugging #:::...\n' # Run program in debug mode
+		gdb ./debug/$exec
+	fi
+	echo -e '\n...:::#   Program End  #:::...\n'
 
-# g++ -w -std=c++11 -o $name $name.cpp 
-
-# # Ty wstawić, że jeśli się nie skompiluje to nie uruchamiać programu
-# # Potrzebuję: Jaki błąd wysyła kompilator
-# rc=$?  # Store exit code for later use
-# if [ $rc -ne 0 ]; then  # $rc not equal to zero
-    # echo "...:::# Błąd kompilacji #:::..."
-# else
-# ./$name #$1 $2 #$1 and $2 are for adding dditional parameter.
-# fi
+else
+	echo -e '\n...:::#   Compile Error  #:::...\n'
+fi

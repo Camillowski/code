@@ -4,6 +4,15 @@
 #include <string>
 #include <set>
 
+//MESSAGE CLASSES
+/*
+This is a simple system to represent storing data.
+
+It has class Messsage that contains message string and set of folder pointer where the class exists.
+
+It has Folder class that stores pointers to messages.
+*/
+
 class Folder;
 
 //------------------------------------------------------
@@ -23,25 +32,34 @@ class Message{
 		//Assignment copy
 		Message& operator=(const Message&);
 		
-		//Save to folder fcn
+		//Move ctor
+		Message(Message&&);
+		
+		//Move assignment operator
+		Message& operator=(Message&&);
+		
+		//Add or Remove message from folder
 		void save(Folder&);
-
-		//Remove from folder fcn
 		void remove(Folder&);
 		
-		//Adds and removes folders
+		//Adds and removes folder from message
 		void addFolder(Folder&);
-		
 		void remFolder(Folder&);
 		
-		//Debug
+		//Debug - Print content and folder pointers
 		void debug();
+		
+		//Test - return copy of set with folder ptrs
+		const std::set<Folder*>& test();
 	
 	private:
-		//Add to folders fcn
+		//Update folders after move operation
+		void mov_update_folders(Message&);
+		
+		//Add message to all folderS
 		void add_to_Folders(const Message&);
 		
-		//Remove from folders fcn
+		//Remove this message from all folderS
 		void remove_from_Folders();
 	
 	private:
@@ -57,23 +75,31 @@ class Folder{
 		//Ctors
 		Folder(){}
 		Folder(const Folder &f);
-		~Folder(){}
+		Folder(Folder&&);
+		~Folder();
 		
 		//Asignment operator
 		Folder& operator=(const Folder&);
 		
-		//Add message
+		//Move assignment operator
+		Folder& operator=(Folder&&);
+		
+		//Add message to this filder
 		void addMsg(Message&);
 		
-		//Remove message
+		//Remove message from this folder
 		void remMsg(Message&);
 		
 		//Debug
 		void debug();
 		
+		//Test - Return copy of set.
+		const std::set<Message*>& test();
+		
 	private:
-		void add_to_Message(const Folder&);
-		void rem_from_Message();
+		//Add or remove folder from Messsages in set
+		void add_to_Messages(const Folder&);
+		void rem_from_Messages(Folder&);
 	
 	private:
 		std::set<Message*> messages;

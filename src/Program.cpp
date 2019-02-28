@@ -1,36 +1,459 @@
+/*
 //#include "Game.h"
+// #include <list>
+// #include <locale>
+// #include <deque>
+// #include <array>
+// #include <forward_list>
+// #include <cctype>
+// #include <cstring>
+// #include <typeinfo>
+// #include "Sales_item.h"
+// #include <stack>
+// #include <algorithm>
+// #include <numeric>
+// #include <iterator>
+// #include <unordered_map>
+// #include <cstdlib>
+
+// #include <set>
+// #include <map>
+// #include <string>
+// #include <memory>
+// #include <fstream>
+// #include <sstream>
+// #include "TextQuery.h"
+// #include "Sales_data.h"
+// #include "MyFcn.h"
+// #include "StrVec.h"
+*/
+
 #include <iostream>
-//#include <fstream>
-//#include <sstream>
+#include "MyStr.h"
 //#include <vector>
-//#include <list>
-//#include <locale>
-//#include <deque>
-//#include <array>
-//#include <forward_list>
-//#include <cctype>
-#include <string>
-//#include <cstring>
-//#include <typeinfo>
-//#include "Sales_item.h"
-//#include <stack>
-//#include <algorithm>
-//#include <numeric>
-//#include <functional>
-//#include <iterator>
-//#include <map>
-//#include <unordered_map>
-#include <set>
-//#include <memory>
-//#include <cstdlib>
-//#include "Sales_data.h"
-//#include "MyFcn.h"
-#include "Ch13_36.h"
-//using placeholders::_1, placeholders::_2;
+// #include <chrono>
+// #include <time.h>
+// #include <cstdlib>
+// #include "MyFcn.h"
+
 using namespace std;
+
+
+int main() 
+{ 
+	union union_t{
+		 int i; // 4 bytes
+		 char c[4]; //1 byte each character
+		 struct{
+			short hi;	// 2 bytes
+			short lo;	// 2 bytes
+		 } s;
+	};
+	
+	union_t myUnion;
+	myUnion.c[2] = 'z';
+	cout<<myUnion.i<<endl;
+	cout<<myUnion.s.hi<<endl;
+	cout<<myUnion.s.lo<<endl;
+	
+	enum Monsters {
+     Goblin,
+     Dragon,
+     Lizard
+};
+
+Monsters Raghool=Dragon;
+Monsters Dorian=Goblin;
+
+cout<<Raghool<<endl;
+	return 0; 
+} 
+
+
+//Ex. 14.49
+/*
+Add a move constructor and move-assignment operator to your StrVec, String, and Message classes.
+
+
+
+3. Add to StrVec
+
+
+
+//PART 2 Add to MyStr
+*/
+
+/*
+//PART 1 Add to Message
+
+#include "Ch13_36.h"
+
+void testMoveCtor(){
+	Message m1("My Message ctor");
+	Folder f1;
+	Folder f2;
+	m1.save(f1);
+	m1.save(f2);
+	Message m2(std::move(m1));	
+	
+	// m2.debug();
+	// m1.debug();
+	// f1.debug();
+	// f2.debug();
+	
+	if (f1.test().count(&m1)==0 && f1.test().count(&m2)==1)
+		cout<<"Message move ctor test PASSED"<<endl;
+	else{
+		cout<<"Message move ctor test FAILED"<<endl;
+		f1.debug();
+		m2.debug();
+	}
+}
+
+void testMoveAssgn(){
+	Message m1("My Message that will take new values");
+	Message m2("Message being assigned");	
+	Folder f1;
+	Folder f2;
+	m1.save(f1);
+	m2.save(f2);
+	
+	m1=std::move(m2);//Move is to use move assng op. Otherwise copy.
+	
+	//Test condition
+	//	m2 dissapears from folder f2
+	//	m1 value dissapears from floder f1
+	//  m1 apears in f2.
+	if(f2.test().count(&m2)==0 &&
+	f2.test().count(&m1)==1 && 
+	f1.test().count(&m1)==0){
+		cout<<"Message move assignment operator test PASSED"<<endl;
+	}
+	else{
+		cout<<"Message move assignment operator test FAILED"<<endl;
+		f1.debug();
+		f2.debug();
+		m1.debug();
+		m2.debug();
+	}
+}
+
+void testMoveCtorFolder(){
+	//Setup
+	Message m1("My Message");
+	Folder f1;
+	m1.save(f1);
+	Folder f2(std::move(f1));
+	
+	//Check test conditions
+	if(m1.test().count(&f2)==1 && 
+	f1.test().empty()==true && 
+	m1.test().count(&f1)==0 && 
+	f2.test().count(&m1)==1){
+		cout<<"Folder move ctor operator test PASSED"<<endl;
+	}
+	else{
+		cout<<"Folder move ctor operator test FAILED"<<endl;
+		cout<<endl;
+		f1.debug();
+		cout<<endl;
+		f2.debug();
+		cout<<endl;
+		m1.debug();
+	}
+}
+
+void testMoveAssgnFolder(){
+	
+	//Setup
+	Message m1("My Message");
+	Message m2("Kamil Kamil");
+	Folder f1;
+	m1.save(f1);
+	Folder f2;
+	m2.save(f2);
+	f2=std::move(f1);
+	
+	//Check 
+	if(f2.test().count(&m1)==1 && //If f2 has m1
+	f1.test().count(&m1)==0 && //If f1 is empty
+	m1.test().count(&f1)==0 && //If m1 has NOT f1
+	m1.test().count(&f2)==1){ //If m1 has f2
+		cout<<"Folder move assignment PASSED"<<endl;
+	}else{
+		cout<<"Folder move assignment FAILED"<<endl;
+		f1.debug();
+		cout<<endl;
+		f2.debug();
+		cout<<endl;
+		m1.debug();
+		cout<<&f2<<endl;
+	}
+}
+
+void TESTS(){
+	testMoveCtor();
+	testMoveAssgn();
+	testMoveCtorFolder();
+	testMoveAssgnFolder();
+}
+
+int main(){
+	
+	TESTS();
+	
+	return 0;
+}
+*/
+
+//Ex. Experiments with static variables and function pointers
+/*
+//Create two functions and third that will have fcn ptr as argument.
+
+int add(int a, int b){
+	return a+b;
+}
+
+int tim(int a, int b){
+	return a*b;
+}
+
+//Pointer to function
+static int result(int x, int y, int(*fcn)(int,int)){
+	return fcn(x,y);
+}
+
+//Static dont need initialization. Default 0.
+static int a;
+
+class statTest {
+	static const vector<char> favLtrs;
+public:
+	void printL(){
+		vector<char>::const_iterator begin=favLtrs.begin();
+		while(begin!=favLtrs.end())
+			cout<<*begin++<<endl;
+	}
+};
+
+const vector<char> statTest::favLtrs{'a', 'l', 'a'};
+
+int main(){
+
+a=result(5,7,tim);
+cout<<a<<endl;
+
+statTest obj;
+obj.printL();
+}
+*/
+
+//Ex. Playing with inheritance
+/*
+Write an Apple class and a Banana class that are derived from a common Fruit class. Fruit should have two members: a name, and a color.
+
+
+class Fruit{
+
+public:
+	Fruit(string n="", string c=""):name(n),color(c){}
+	string getName(){return name;}
+	string getColor(){return color;}
+
+private:
+	string name;
+	string color;
+};
+
+class Apple: public Fruit{
+public:
+	Apple(string c="red", string n="apple"):Fruit(n,c){}
+};
+
+class Banana: public Fruit{
+public:
+	Banana(string c="yellow", string n="banana"):Fruit(n,c){}
+};
+
+class GrannySmith: public Apple{
+public:
+	GrannySmith(string c="green", string n="granny smith apple"):Apple(c,n){}
+};
+
+int main()
+{
+	Apple a("red");
+	Banana b;
+	GrannySmith c;
+	
+	cout << "My " << a.getName() << " is " << a.getColor() << ".\n";
+	cout << "My " << b.getName() << " is " << b.getColor() << ".\n";
+	cout << "My " << c.getName() << " is " << c.getColor() << ".\n";
+}
+*/
+
+//Ex. Playing with timing execution time of functions
+/*
+
+int pot(int p, int w){
+	if (w==0)
+		return 1;
+	else
+		return p*pot(p,w-1);
+
+		//return (w==0)?1:(p*pot(p,w-1));
+}
+
+int pot2(int p, int w){
+	int res=0;
+	for(int i=0;i<w;++i)
+		res*=p;
+	return res;
+}
+
+void printXtimes(string s, int tms){
+	
+	if(tms>0){
+		cout<<"[ "<<tms<<" ]\t"<<s<<endl;
+		printXtimes(s,tms-1);
+	}
+}
+
+void printXnor(string s, int tms){
+	for (int i=tms;i>=1;--i)
+		cout<<"[ "<<i<<" ]\t"<<s<<endl;
+}
+
+int main(){
+	//cout<<pot(5,5)<<endl;
+	
+	// auto start=high_resolution_clock::now();
+	// //1st fcn
+	// //printXtimes("Kamil to miszcz!",10);
+	// cout<<"Res1: "<<pot(5,5)<<endl;
+	
+	// auto stop=high_resolution_clock::now();
+	// auto dur=duration_cast<microseconds>(stop-start);
+	// cout<<"Function time: "<<dur.count()<<endl;
+	
+	
+	// start=high_resolution_clock::now();
+	// //2md fcn
+	// cout<<"Res2: "<<pot2(5,10)<<endl;
+	// //printXnor("Kamil to miszcz!!",10);
+	
+	// stop=high_resolution_clock::now();	
+	// dur=duration_cast<microseconds>(stop-start);
+	// cout<<"Function time: "<<dur.count()<<endl;
+	
+	cout<<"Now some C stuff!"<<endl;
+	
+	clock_t start, stop;
+	double time;
+	uint wyk=1000000;
+	start=clock();
+	for(uint i=0;i<=wyk;++i)
+		pot2(5,10);
+	stop=clock();
+	time=(double)(stop-start)/CLOCKS_PER_SEC*1000;
+	cout<<"Function time: "<<time<<endl;
+	
+	start=clock();
+	for(uint i=0;i<=wyk;++i)
+		pot(5,10);
+	stop=clock();
+	time=(double)(stop-start)/CLOCKS_PER_SEC*1000;
+	cout<<"Function time: "<<time<<endl;
+}\
+*/
+
+//Ex.13.44
+/*
+Write a class named String that is a simpliﬁed version of the library
+string class. Your class should have at least a default constructor and a constructor that takes a pointer to a C-style string. Use an allocator to allocate memory that your String class uses.
+
+Files: MyStr.h and MyStr.cpp
+
+int main(){
+
+MyStr s2("Kamil cccc sssssxx dsaftrfs");
+MyStr s1(s2);
+MyStr s3(" to jest Mistrzunio!!!!!!");
+
+//s2.print();
+MyStr s4(s1);
+//s4.print();
+//cout<<s4.size()<<" "<<s4.capacity()<<endl;
+//cout<<s4+" A to jest kolejna linijka!\nJoł!"<<endl;
+
+MyStr s5=s4;
+
+//cout<<s5+" is a New String\n";
+cout<<s5.size()<<" "<<s5.capacity()<<endl;
+s5="Camillowski to Miszcz nad miszczami i rodzajamiLALALA!";
+cout<<s5<<endl;
+cout<<s5.size()<<" "<<s5.capacity()<<endl;
+//cout<<s4<<endl;
+}
+*/
+
+//Ex.13.43
+/*
+Rewrite the free member to use for_each and a lambda (§ 10.3.2,
+p. 388) in place of the for loop to destroy the elements. Which implementation do you prefer, and why?
+
+#include <algorithm>
+//DESTROY OBJECTS AND FREE SPACE
+void StrVec::free(){
+	//Destroy objects
+	
+	for_each(begin(),end(),[](string &str)->void{
+		alloc.destroy(&ptr);
+	})
+	//Deallocate mem
+	alloc.deallocate(elem,cap-elem);
+}
+*/
+
+//Ex.13.42
+/*
+Test your StrVec class by using it in place of the vector<string>
+in your TextQuery and QueryResult classes (§ 12.3, p. 484).
+
+//#include "StrVec.h"
+//#include "TextQuery.h"
+// #include <fstream>
+// #include <sstream>
+
+void runQueries(ifstream &infile){
+	TextQuery tq(infile);
+	while(true){
+		cout<<"Enter word or q to quit: ";
+		string word;
+		if(!(cin>>word) || word=="q") break;
+		print(cout,tq.query(word));
+		cin.ignore(numeric_limits<streamsize>::max(),'\n').clear();
+	}
+}
+int main(){
+	ifstream fstrm(flText);
+	runQueries(fstrm);	
+}
+*/
+
+//Ex. Create own string vector
+/*
+Learned:
+When pass pointer to function it is a copy of pointer. When changed it wont affect original.
+Create own vector that will hold data, dynamicaly allocate memory and have some operations the same as regular vector.
+
+DONE Check StrVec.h and StrVec.cpp
+*/
 
 //Ex. Copy-Control Example
 /*
+#include "Ch13_36.h"
+
 Create two classes. Folder and Message class.
 Main idea is to connect those two classes together and create proper working functions for them. First I will start with Message class.
 
@@ -64,186 +487,10 @@ Folder:
 -addMsg - Adds message to set of messages
 -remMsg - Removes message from set
 -Copy-control => Create functions that Add and remove from all mesages
- 
 
-
-class Message;
-
-class Folder{
-	public:
-		//Default ctor
-		Folder(){}
-		
-		//Copy ctor
-		Folder(const Folder &f);
-		
-		//Add message
-		void addMsg(Message&);
-		
-		//Remove message
-		void remMsg(Message&);
-	
-	private:
-		void add_to_Messages(const Folder&);
-	
-	private:
-		set<Message*> messages;
-};
-void Folder::add_to_Messages(const Folder &f){
-	
-	//Add this folder to messages from set
-	for(Message* el:f.messages){
-		el->addFolder(*this);
-	}
-}
-
-Folder::Folder(const Folder &f): messages(f.messages){
-	
-	add_to_Messages(f);
-}
-	
-//Add message
-void Folder::addMsg(Message &m){
-	messages.insert(&m);
-	//m.save(*this);
-}
-
-//Remove message
-void Folder::remMsg(Message &m){
-	messages.erase(&m);
-	//m.remove(*this);
-}
-
-
-
-//------------------------------------------------------
-	
-class Message{
-	public:
-		friend void swap(Message&,Message&);
-		friend Folder;
-		//Ctor
-		explicit Message(string str=""):contents(str){}
-		
-		//Copy-ctor
-		Message(const Message&);
-		
-		//Destructor
-		~Message();
-		
-		//Assignment copy
-		Message& operator=(const Message&);
-		
-		//Save to folder fcn
-		void save(Folder&);
-
-		//Remove from folder fcn
-		void remove(Folder&);
-		
-		
-		void addFolder(Folder&);
-		
-		void remFolder(Folder&);
-	
-	private:
-		//Add to folders fcn
-		void add_to_Folders(const Message&);
-		
-		//Remove from folders fcn
-		void remove_from_Folders();
-	
-	private:
-		string contents; //Holds text
-		set<Folder*> folders; //Holds ptrs to folders
-	
-};
-
-//Copy-ctor
-Message::Message(const Message &m):contents(m.contents),folders(m.folders){
-add_to_Folders(m);
-}
-	
-//Destructor
-Message::~Message(){
-	remove_from_Folders();
-}	
-
-//Assignment copy
-Message& Message::operator=(const Message &rhs){
-	//Remove old msg from folders
-	remove_from_Folders();
-	
-	//Copy content and folders
-	contents=rhs.contents;
-	folders=rhs.folders;
-	
-	//Add new message to folders
-	add_to_Folders(rhs);
-	
-	return *this;
-}
-
-//Save to folder fcn
-void Message::save(Folder &f){
-	//Add folder pointer to message set
-	folders.insert(&f); //This is address of
-	
-	//Add mesage to folder
-	f.addMsg(*this);
-}
-
-//Remove from folder fcn
-void Message::remove(Folder &f){
-	//Remove folder from folders set
-	folders.erase(&f);
-	
-	//Remove msg from designated folder
-	f.remMsg(*this);
-}
-
-//Add to folders fcn
-void Message::add_to_Folders(const Message& m){
-	//Add new message to all folders from set
-	for(Folder* el:folders){
-		el->addMsg(*this);
-	}	
-}
-
-//Remove message from folders
-void Message::remove_from_Folders(){
-	for(Folder* el:folders){
-		el->remMsg(*this);
-	}
-	folders.clear();
-}
-
-
-void swap(Message & lhs, Message &rhs){
-	using std::swap;
-	
-	//Remove pointers to both messages from folders
-	for(Folder* el:lhs.folders){
-		el->remMsg(lhs);
-	}
-	for(Folder* el:rhs.folders){
-		el->remMsg(rhs);
-	}
-	
-	//Swap variables
-	swap(lhs.contents, rhs.contents);
-	swap(lhs.folders,rhs.folders);
-	
-	//Add swaped messages to folders
-	for(Folder* el:lhs.folders){
-		el->addMsg(lhs);
-	}
-	for(Folder* el:rhs.folders){
-		el->addMsg(rhs);
-	}
-}
-*/
 
 int main(){
+	
 	Message m1("Message 1");
 	Message m2("Message 2");
 	Folder f1;
@@ -252,19 +499,11 @@ int main(){
 	m1.save(f1);
 	m1.save(f2);
 	m2.save(f2);
-	//f1.addMsg(m2);
-	//f2.debug();
-	//f1.addMsg(m1);
-	//f1.debug();
-	//f1.remMsg(m1);
-	//f1.addMsg(m2);
-	//f1.debug();
 	m1.debug();
 	m2.debug();
-	cout<<"Hello";
 	return 0;
 }
-
+*/
 
 //Ex. Messing with binary search trees TO CONTINUE! FIX!
 /*
@@ -905,8 +1144,9 @@ int main(){
 /*
 Rewrite the TextQuery and QueryResult classes to use a StrBlob
 instead of a vector<string> to hold the input ﬁle.
+*/
 
-
+/*
 class TextQuery;
 class QueryResult{
 	public:
@@ -933,6 +1173,7 @@ void print(ostream &os, QueryResult res){
 	
 	//Print lines from file
 	StrBlobPtr begBlob=res.fileVec.begin();
+	
 	//StrBlobPtr endBlob=res.fileVec.end();
 	auto begin=res.lineNr->begin();
 	int cnt=0;

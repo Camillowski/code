@@ -1,0 +1,29 @@
+AIM:
+I want to have a universal makefile for my projects.
+
+USER STORIES:
+1. DONE I want just write the name of main file(np. Program, Game etc.), name of the headers(contain .cpp) and required libraries.
+
+2. DONE I want make file to collect data and compile all files that I have put and link them with main file.
+
+3. DONE I do not want to have any complex dependencies, like functions .cpp needs additional .cpp files to work.
+
+4. I want to have possibility to add option (Y/N) to build debug config and place it in debug folder.
+When I turn debug on insid prog.sh I want to have debug flag passed to makefile and after that gdb run from prog.sh
+	-Add -debug to CFLAG if $1 is set to debug
+
+
+5. DONE I want to check if included files has chnged. If yes then recompile all
+
+6. I want to show echo when debug mode is set.
+
+6. Project structure
+Project
+|---src/
+|---build/
+|---bin/
+|---include/
+|---lib/
+|---data/
+|-makefile.mak
+|-prog.sh

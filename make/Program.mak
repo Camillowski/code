@@ -2,7 +2,7 @@
 
 CC=g++
 EXEC=Program
-DIR=~/Documents/Programowanie
+DIR=~/Documents/Programowanie/Cpp
 CFLAGS=-c -w -std=c++17 -Wfatal-errors
 INCLUDES=-I $(DIR)/include
 LIBS=-lncurses

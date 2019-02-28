@@ -1,7 +1,6 @@
 #ifndef SALESDATA_H
 #define SALESDATA_H
 
-
 //-----TEXTQUERY---------------------------------
 /*
 Classes that search for word in file. Then return all line numbers where this word apears.
